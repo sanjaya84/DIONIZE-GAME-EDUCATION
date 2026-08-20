@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Dunia Warna Ceria - Aplikasi Menggambar & Dongeng Anak</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #FFDE59 0%, #FF914D 50%, #FF66C4 100%);
+      --primary-color: #FF5757;
+      --secondary-color: #00C2CB;
+      --accent-color: #7ED957;
+      --yellow-star: #FFBD59;
+      --font-main: 'Fredoka', 'Comic Sans MS', sans-serif;
+    }
+
+    * { box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+
+    body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: var(--font-main); background: #FFF9E6; }
+
+    .bg-clouds { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+    .cloud { position: absolute; background: rgba(255, 255, 255, 0.4); border-radius: 50px; animation: floatCloud 25s linear infinite; }
+    .cloud::before, .cloud::after { content: ''; position: absolute; background: rgba(255, 255, 255, 0.4); border-radius: 50%; }
+    .cloud1 { width: 120px; height: 40px; top: 10%; left: -150px; animation-duration: 22s; }
+    .cloud1::before { width: 50px; height: 50px; top: -20px; left: 20px; }
+    .cloud1::after { width: 40px; height: 40px; top: -15px; left: 55px; }
+    .cloud2 { width: 160px; height: 50px; top: 60%; left: -200px; animation-duration: 32s; animation-delay: 5s; }
+    .cloud2::before { width: 60px; height: 60px; top: -25px; left: 25px; }
+    .cloud2::after { width: 50px; height: 50px; top: -20px; left: 70px; }
+
+    @keyframes floatCloud { 0% { transform: translateX(0); } 100% { transform: translateX(calc(100vw + 300px)); } }
+
+    .btn-bounce { transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease; cursor: pointer; }
+    .btn-bounce:active { transform: scale(0.92) translateY(3px) !important; }
+
+    .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 10; opacity: 0; pointer-events: none; transition: opacity 0.4s ease, transform 0.4s ease; transform: scale(0.96); }
+    .screen.active { opacity: 1; pointer-events: auto; transform: scale(1); }
+
+    #screen-login { background: var(--bg-gradient); justify-content: center; }
+    .login-card { background: #FFFFFF; width: 90%; max-width: 420px; padding: 30px 25px; border-radius: 35px; box-shadow: 0 15px 0 #D97A26, 0 25px 30px rgba(0,0,0,0.15); text-align: center; border: 6px solid #FFF; position: relative; z-index: 2; }
+    .app-title { font-size: 2.2rem; color: #FF4757; margin: 0 0 10px 0; text-shadow: 3px 3px 0px #FFE100; line-height: 1.2; }
+    
+    .avatar-selector { display: flex; justify-content: center; gap: 12px; margin: 15px 0; }
+    .avatar-option { font-size: 2rem; width: 55px; height: 55px; line-height: 50px; border-radius: 50%; background: #F0F4F8; border: 3px solid #E2E8F0; cursor: pointer; transition: all 0.2s ease; }
+    .avatar-option.selected { transform: scale(1.15); border-color: #FF5757; background: #FFEAA7; box-shadow: 0 5px 12px rgba(255, 87, 87, 0.4); }
+
+    .form-group { margin-bottom: 15px; text-align: left; }
+    .form-group label { display: block; font-size: 1.1rem; color: #4A5568; font-weight: 700; margin-bottom: 5px; margin-left: 10px; }
+    .input-child { width: 100%; padding: 14px 20px; font-size: 1.25rem; font-family: var(--font-main); border: 4px solid #5CE1E6; border-radius: 25px; outline: none; text-align: center; font-weight: 700; color: #2D3748; background: #F7FAFC; user-select: text; -webkit-user-select: text; }
+    .input-child:focus { border-color: #FF66C4; background: #FFF; }
+
+    .age-pills { display: flex; justify-content: space-between; gap: 10px; }
+    .age-pill { flex: 1; padding: 10px; background: #EDF2F7; border: 3px solid #CBD5E0; border-radius: 20px; font-size: 1.2rem; font-weight: 700; color: #4A5568; cursor: pointer; text-align: center; }
+    .age-pill.selected { background: #00C2CB; color: white; border-color: #00979E; box-shadow: 0 4px 0 #007A80; }
+
+    .btn-play { width: 100%; padding: 16px; margin-top: 15px; background: #7ED957; border: none; border-radius: 30px; color: white; font-size: 1.7rem; font-weight: 700; font-family: var(--font-main); box-shadow: 0 8px 0 #58B032, 0 10px 15px rgba(0,0,0,0.1); cursor: pointer; }
+
+    #screen-menu { background: #F3F8FF; padding: 20px; overflow-y: auto; align-items: center; }
+    .menu-header { width: 100%; max-width: 800px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; margin-top: env(safe-area-inset-top, 10px); }
+    .user-badge { display: flex; align-items: center; gap: 12px; background: #FFF; padding: 8px 20px 8px 12px; border-radius: 40px; box-shadow: 0 6px 0 #E2E8F0; border: 3px solid #00C2CB; }
+    .user-badge .avatar-icon { font-size: 2.2rem; }
+    .user-badge .user-info { display: flex; flex-direction: column; }
+    .user-badge .user-name { font-size: 1.3rem; font-weight: 700; color: #2D3748; line-height: 1.1; }
+    .user-badge .user-age { font-size: 0.95rem; color: #718096; font-weight: 600; }
+
+    .story-banner-btn { width: 100%; max-width: 800px; background: linear-gradient(135deg, #9B59B6 0%, #AF52DE 100%); border: 4px solid #F3E8FF; border-radius: 25px; padding: 20px; margin-bottom: 25px; box-shadow: 0 10px 0 #732D91, 0 15px 25px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; gap: 15px; cursor: pointer; color: white; font-family: var(--font-main); transition: transform 0.15s ease; }
+    .story-banner-btn:active { transform: translateY(5px); box-shadow: 0 5px 0 #732D91; }
+    .story-banner-icon { font-size: 3.5rem; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.2)); }
+    .story-banner-text { text-align: left; }
+    .story-banner-title { font-size: 1.8rem; font-weight: 700; margin: 0; text-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
+    .story-banner-subtitle { font-size: 1.1rem; opacity: 0.9; margin: 5px 0 0 0; font-weight: 600; }
+
+    .idea-box-container { width: 100%; max-width: 800px; background: #FFEAA7; border: 4px solid #FFBD59; border-radius: 25px; padding: 15px 20px; margin-bottom: 25px; box-shadow: 0 8px 0 #FF914D; text-align: center; position: relative; }
+    .idea-box-title { font-size: 1.4rem; color: #D97A26; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .idea-input-group { display: flex; gap: 10px; margin-bottom: 12px; }
+    .idea-input { flex: 1; padding: 12px 20px; font-size: 1.2rem; font-family: var(--font-main); border: 3px solid #FFF; border-radius: 20px; outline: none; font-weight: 600; color: #2D3748; background: #FFF; user-select: text; -webkit-user-select: text; }
+    .idea-input:focus { border-color: #FF66C4; }
+    .btn-idea { background: #FF5757; color: white; border: none; border-radius: 20px; padding: 0 20px; font-size: 1.2rem; font-weight: 700; font-family: var(--font-main); cursor: pointer; box-shadow: 0 5px 0 #D93636; white-space: nowrap; }
+    
+    .idea-suggestions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; }
+    .suggestion-chip { background: #FFF; border: 2px solid #FFBD59; border-radius: 15px; padding: 5px 12px; font-size: 0.9rem; font-weight: 700; color: #D97A26; cursor: pointer; transition: all 0.2s ease; }
+    .suggestion-chip:hover { background: #FF5757; color: #FFF; border-color: #FF5757; transform: scale(1.05); }
+
+    .menu-grid { width: 100%; max-width: 800px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 18px; padding-bottom: 30px; }
+    .card-template { background: #FFF; border-radius: 25px; padding: 15px; text-align: center; box-shadow: 0 8px 0 #CBD5E0, 0 12px 20px rgba(0,0,0,0.06); border: 4px solid #FFF; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+    .card-template:hover { border-color: #00C2CB; transform: translateY(-5px); }
+    .card-template .icon-holder { width: 100%; height: 100px; background: #F7FAFC; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; font-size: 4rem; }
+    .card-template .template-title { font-size: 1.1rem; font-weight: 700; color: #2D3748; }
+
+    #screen-studio { background: #EBF8FF; justify-content: space-between; }
+    .studio-header { width: 100%; height: 65px; background: #FFF; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); z-index: 20; flex-shrink: 0; margin-top: env(safe-area-inset-top); }
+    .btn-header { padding: 8px 16px; border-radius: 20px; border: none; font-size: 1.1rem; font-weight: 700; font-family: var(--font-main); color: white; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .btn-back { background: #FF914D; box-shadow: 0 4px 0 #D9702B; }
+    .btn-clear { background: #FF5757; box-shadow: 0 4px 0 #D93636; }
+    .btn-undo { background: #00C2CB; box-shadow: 0 4px 0 #009096; }
+    .btn-save { background: #7ED957; box-shadow: 0 4px 0 #58B032; }
+
+    .studio-workspace { flex: 1; width: 100%; display: flex; position: relative; overflow: hidden; }
+
+    .tools-panel { width: 85px; background: #FFF; display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 12px; box-shadow: 4px 0 10px rgba(0,0,0,0.04); z-index: 15; overflow-y: auto; }
+    .tool-btn { width: 60px; height: 60px; border-radius: 20px; background: #F7FAFC; border: 3px solid #E2E8F0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; position: relative; flex-shrink: 0; }
+    .tool-btn span { font-size: 0.7rem; font-weight: 700; color: #4A5568; margin-top: -2px; }
+    .tool-btn.active { background: #FFEAA7; border-color: #FF5757; box-shadow: 0 4px 0 #FF5757; transform: scale(1.05); }
+
+    .canvas-container { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; background: #FFF; margin: 10px; border-radius: 25px; box-shadow: inset 0 0 15px rgba(0,0,0,0.08); border: 4px dashed #CBD5E0; overflow: hidden; touch-action: none; }
+    canvas#paintCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+
+    .sub-tools-container { width: 100%; background: #F7FAFC; border-top: 2px dashed #CBD5E0; display: flex; align-items: center; justify-content: center; min-height: 55px; padding: 0 15px; z-index: 15; flex-shrink: 0; }
+    .sub-tools-bar { display: flex; gap: 15px; align-items: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .sub-tools-bar::-webkit-scrollbar { display: none; }
+    .size-dot { background: #2D3748; border-radius: 50%; cursor: pointer; flex-shrink: 0; }
+    .size-dot.selected { background: #FF5757; outline: 3px solid #FFEAA7; }
+    .stamp-item { font-size: 2rem; cursor: pointer; padding: 2px 6px; border-radius: 12px; flex-shrink: 0; }
+    .stamp-item.selected { background: #FFEAA7; transform: scale(1.2); }
+
+    .palette-panel { width: 100%; background: #FFF; padding: 12px 15px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); display: flex; align-items: center; justify-content: flex-start; gap: 12px; overflow-x: auto; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); z-index: 15; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; flex-shrink: 0; }
+    .palette-panel::-webkit-scrollbar { display: none; }
+    .palette-panel { -ms-overflow-style: none; scrollbar-width: none; }
+    .swatch { width: 50px; height: 50px; min-width: 50px; border-radius: 50%; border: 4px solid #FFF; box-shadow: 0 4px 6px rgba(0,0,0,0.15); cursor: pointer; transition: transform 0.2s ease; flex-shrink: 0; }
+    .swatch.active { transform: scale(1.25); border-color: #2D3748; z-index: 2; }
+    
+    .color-picker-wrapper { position: relative; width: 50px; height: 50px; min-width: 50px; border-radius: 50%; border: 4px solid #FFF; box-shadow: 0 4px 6px rgba(0,0,0,0.15); cursor: pointer; transition: transform 0.2s ease; flex-shrink: 0; background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); display: flex; align-items: center; justify-content: center; }
+    .color-picker-wrapper.active { transform: scale(1.25); border-color: #2D3748; z-index: 2; }
+    .color-picker-wrapper span { font-size: 1.5rem; pointer-events: none; text-shadow: 0 0 5px rgba(255,255,255,0.8); }
+    #custom-color-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+
+    #screen-storybook { background: #1A2035; overflow-y: auto; padding-bottom: 30px; }
+    .storybook-stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; opacity: 1; background-image: radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)), radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)), radial-gradient(3px 3px at 50px 160px, #ddd, rgba(0,0,0,0)), radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)), radial-gradient(2px 2px at 150px 120px, #eee, rgba(0,0,0,0)); background-repeat: repeat; background-size: 250px 250px; animation: twinkle 4s infinite alternate; }
+    @keyframes twinkle { 0% { opacity: 0.3; } 100% { opacity: 0.9; } }
+    
+    .storybook-header { width: 100%; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 20; position: relative; margin-top: env(safe-area-inset-top); }
+    .storybook-title { color: #FFD700; font-size: 1.6rem; font-weight: 700; text-shadow: 0 2px 10px rgba(255, 215, 0, 0.4); margin: 0; }
+
+    .storybook-content { width: 100%; max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; padding: 0 20px; z-index: 10; position: relative; }
+    
+    .story-img-container { width: 100%; aspect-ratio: 16/9; background: #2D3748; border-radius: 20px; border: 4px solid #9B59B6; box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 30px rgba(155, 89, 182, 0.4); overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+    .story-img-container img { width: 100%; height: 100%; object-fit: cover; display: none; transition: opacity 0.5s ease; }
+    .story-loader { color: #FFF; font-size: 1.2rem; display: flex; flex-direction: column; align-items: center; gap: 10px; font-weight: 600; text-align: center; padding: 20px; }
+    .story-loader span { font-size: 2.5rem; animation: spin 2s linear infinite; }
+
+    .page-indicators { display: flex; gap: 12px; margin: 20px 0; justify-content: center; }
+    .page-dot { width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: all 0.3s ease; border: 2px solid transparent; }
+    .page-dot.active { background: #FFD700; box-shadow: 0 0 10px #FFD700; transform: scale(1.3); }
+    .page-dot.loading { animation: pulseDot 1s infinite alternate; background: #00C2CB; }
+    @keyframes pulseDot { 0% { opacity: 0.5; transform: scale(1); } 100% { opacity: 1; transform: scale(1.1); } }
+
+    .story-text-container { width: 100%; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 25px; padding: 25px; border: 2px solid rgba(255, 255, 255, 0.2); margin-bottom: 25px; min-height: 120px; display:flex; align-items:center; }
+    .story-text { color: #FFF; font-size: 1.35rem; line-height: 1.6; font-weight: 600; text-align: justify; margin: 0; width:100%; }
+
+    .story-controls { display: flex; gap: 15px; width: 100%; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+    .btn-nav-scene { width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.5); color: white; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(5px); }
+    .btn-nav-scene:disabled { opacity: 0.3; cursor: not-allowed; }
+    .btn-nav-scene:active:not(:disabled) { transform: scale(0.9); background: rgba(255,255,255,0.4); }
+    
+    .btn-story-action { padding: 15px 25px; border-radius: 30px; border: none; font-size: 1.2rem; font-weight: 700; font-family: var(--font-main); color: white; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 6px 0 rgba(0,0,0,0.2); transition: transform 0.15s; }
+    .btn-story-action:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+    .btn-story-play { background: #FF914D; }
+
+    .global-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 100; backdrop-filter: blur(5px); }
+    .global-overlay.active { opacity: 1; pointer-events: auto; }
+    .spinner { font-size: 4rem; animation: floatCloud 2s infinite alternate, spin 3s linear infinite; margin-bottom: 20px; }
+    .loading-text { font-size: 2.2rem; color: #FF5757; font-weight: 700; margin-top: 10px; text-align: center; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    .custom-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+    .custom-modal.active { opacity: 1; pointer-events: auto; }
+    .modal-box { background: #FFF; padding: 25px; border-radius: 30px; text-align: center; max-width: 320px; width: 85%; box-shadow: 0 10px 0 #00C2CB; border: 4px solid #5CE1E6; }
+    .modal-box h3 { margin: 0 0 10px 0; color: #FF5757; font-size: 1.8rem; }
+    .modal-box p { font-size: 1.2rem; color: #4A5568; margin-bottom: 20px; line-height: 1.4; }
+    .btn-modal { padding: 10px 25px; background: #7ED957; color: white; font-size: 1.3rem; font-weight: 700; border: none; border-radius: 20px; box-shadow: 0 4px 0 #58B032; cursor: pointer; }
+
+    #screen-storybook-library { background: #1A2035; padding: 20px; overflow-y: auto; align-items: center; }
+    .library-header { width: 100%; max-width: 800px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; margin-top: env(safe-area-inset-top, 10px); }
+    .library-title { font-size: 1.8rem; color: #FFD700; text-shadow: 0 2px 10px rgba(255, 215, 0, 0.4); margin: 0; text-align: center; }
+    
+    .story-idea-box { width: 100%; max-width: 800px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); border-radius: 25px; padding: 20px; margin-bottom: 25px; backdrop-filter: blur(10px); text-align: center; }
+    .story-idea-box h3 { color: #FFF; margin: 0 0 10px 0; font-size: 1.4rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+    
+    .story-grid { width: 100%; max-width: 800px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; padding-bottom: 30px; }
+    .story-card { background: #FFF; border-radius: 20px; padding: 15px; text-align: center; cursor: pointer; transition: transform 0.15s; box-shadow: 0 8px 0 #9B59B6, 0 10px 15px rgba(0,0,0,0.2); border: 4px solid #F3E8FF; }
+    .story-card:active { transform: translateY(4px); box-shadow: 0 4px 0 #9B59B6; }
+    .story-icon { font-size: 4rem; margin-bottom: 10px; background: #F3F8FF; border-radius: 15px; height: 90px; display: flex; align-items: center; justify-content: center; }
+    .story-card-title { font-size: 1.2rem; font-weight: 700; color: #2D3748; margin: 0; line-height: 1.2; }
+    .story-card-desc { font-size: 0.85rem; color: #718096; margin-top: 5px; font-weight: 600; line-height: 1.3; }
+
+    #confettiCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 90; }
+
+    @media (max-width: 900px) {
+      .studio-workspace { flex-direction: column-reverse; }
+      .tools-panel { width: 100%; height: auto; flex-direction: row; justify-content: space-evenly; padding: 12px 5px; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); overflow-x: auto; }
+      .tool-btn { width: 55px; height: 55px; font-size: 1.4rem; }
+      .tool-btn span { display: none; }
+      .palette-panel { padding-top: 10px; gap: 8px; }
+      .swatch, .color-picker-wrapper { width: 45px; height: 45px; min-width: 45px; }
+      .sub-tools-container { min-height: 50px; }
+      .stamp-item { font-size: 1.6rem; }
+      .menu-header { flex-direction: column; gap: 12px; align-items: stretch; }
+      .user-badge { justify-content: center; }
+      .idea-input-group { flex-direction: column; }
+      .btn-idea { padding: 14px; font-size: 1.3rem; }
+      .story-banner-btn { flex-direction: column; text-align: center; padding: 15px; }
+      .story-banner-text { text-align: center; }
+    }
+
+    @media (max-width: 480px) {
+      .studio-header { flex-wrap: wrap; height: auto; padding: 10px; gap: 10px; justify-content: center; }
+      .studio-header > div { width: 100%; justify-content: center; }
+      .tool-btn { width: 48px; height: 48px; font-size: 1.2rem; border-width: 2px; }
+      .swatch, .color-picker-wrapper { width: 40px; height: 40px; min-width: 40px; border-width: 3px; }
+      .sub-tools-container { min-height: 45px; }
+      .login-card { padding: 25px 15px; }
+      .btn-story-action { font-size: 1.05rem; padding: 12px 20px; }
+      .story-text { font-size: 1.15rem; }
+      .btn-nav-scene { width: 50px; height: 50px; font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-clouds">
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+  </div>
+
+  <div id="screen-login" class="screen active">
+    <div class="login-card">
+      <h1 class="app-title">🎨 Dunia Warna Ceria</h1>
+      <p style="color:#718096; font-weight:600; margin-bottom:15px;">Pilih Karakter Favoritmu:</p>
+      <div class="avatar-selector">
+        <div class="avatar-option selected btn-bounce" onclick="selectAvatar('🐶', this)">🐶</div>
+        <div class="avatar-option btn-bounce" onclick="selectAvatar('👧', this)">👧</div>
+        <div class="avatar-option btn-bounce" onclick="selectAvatar('🐰', this)">🐰</div>
+        <div class="avatar-option btn-bounce" onclick="selectAvatar('🦁', this)">🦁</div>
+        <div class="avatar-option btn-bounce" onclick="selectAvatar('🐻', this)">🐻</div>
+      </div>
+      <div class="form-group">
+        <label for="child-name">Nama Si Kecil:</label>
+        <input type="text" id="child-name" class="input-child" placeholder="Tulis namamu..." autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>Umur (Tahun):</label>
+        <div class="age-pills">
+          <div class="age-pill btn-bounce" onclick="selectAge(3, this)">3 Th</div>
+          <div class="age-pill selected btn-bounce" onclick="selectAge(4, this)">4 Th</div>
+          <div class="age-pill btn-bounce" onclick="selectAge(5, this)">5 Th</div>
+        </div>
+      </div>
+      <button class="btn-play btn-bounce" onclick="handleStartGame()">Ayo Main! 🚀</button>
+    </div>
+  </div>
+
+  <div id="screen-menu" class="screen">
+    <div class="menu-header">
+      <div class="user-badge">
+        <span class="avatar-icon" id="user-avatar-display">🐶</span>
+        <div class="user-info">
+          <span class="user-name" id="user-name-display">Adik</span>
+          <span class="user-age" id="user-age-display">4 Tahun</span>
+        </div>
+      </div>
+      <button class="btn-header btn-back btn-bounce" onclick="showScreen('screen-login')">⚙️ Ganti Nama</button>
+    </div>
+
+    <div class="story-banner-btn" onclick="openStorybook()">
+      <div class="story-banner-icon">📖</div>
+      <div class="story-banner-text">
+        <h2 class="story-banner-title">Bioskop Dongeng AI ✨</h2>
+        <p class="story-banner-subtitle">Pilih dongeng siap putar atau ketik ide cerita ajaibmu sendiri di sini!</p>
+      </div>
+    </div>
+
+    <div class="idea-box-container">
+      <div class="idea-box-title">✨ Mesin Ide Gambar Ajaib AI ✨</div>
+      <p style="margin: 0 0 10px 0; color: #718096; font-size:0.95rem; font-weight:600;">Ketik benda apapun! AI akan menggambar sketsa hitam putih untukmu!</p>
+      
+      <div class="idea-input-group">
+        <input type="text" id="idea-input-field" class="idea-input" placeholder="Misal: Pangeran, Dinosaurus..." onkeypress="handleIdeaKeypress(event)">
+        <button class="btn-idea btn-bounce" onclick="handleIdeaSubmit()">Buat Sketsa! 🎨</button>
+      </div>
+
+      <div class="idea-suggestions">
+        <span class="suggestion-chip btn-bounce" onclick="quickSelectIdea('gadis lucu')">👧 Gadis Lucu</span>
+        <span class="suggestion-chip btn-bounce" onclick="quickSelectIdea('kucing')">🐱 Kucing</span>
+        <span class="suggestion-chip btn-bounce" onclick="quickSelectIdea('anjing')">🐶 Anjing</span>
+        <span class="suggestion-chip btn-bounce" onclick="quickSelectIdea('dinosaurus')">🦖 Dino</span>
+        <span class="suggestion-chip btn-bounce" onclick="quickSelectIdea('mobil')">🚗 Mobil</span>
+        <span class="suggestion-chip btn-bounce" onclick="quickSelectIdea('puri peri')">🏰 Puri Peri</span>
+      </div>
+    </div>
+
+    <h2 style="color: #2D3748; font-size: 1.6rem; margin: 0 0 15px 0; text-align:left; width:100%; max-width:800px;">Buku Mewarnai:</h2>
+    <div class="menu-grid" id="template-grid"></div>
+  </div>
+
+  <div id="screen-studio" class="screen">
+    <div class="studio-header">
+      <button class="btn-header btn-back btn-bounce" onclick="showScreen('screen-menu')">🏠 Menu</button>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-header btn-undo btn-bounce" onclick="undoCanvas()">↩️ Urungkan</button>
+        <button class="btn-header btn-clear btn-bounce" onclick="clearCanvas()">🗑️ Hapus</button>
+        <button class="btn-header btn-save btn-bounce" onclick="saveArtwork()">🎉 Selesai</button>
+      </div>
+    </div>
+
+    <div class="studio-workspace">
+      <div class="tools-panel">
+        <div class="tool-btn active btn-bounce" id="tool-brush" onclick="setTool('brush')">🖌️<span>Kuas</span></div>
+        <div class="tool-btn btn-bounce" id="tool-bucket" onclick="setTool('bucket')">🪣<span>Ember</span></div>
+        <div class="tool-btn btn-bounce" id="tool-magic" onclick="setTool('magic')">✨<span>Ajaib</span></div>
+        <div class="tool-btn btn-bounce" id="tool-stamp" onclick="setTool('stamp')">⭐<span>Stiker</span></div>
+        <div class="tool-btn btn-bounce" id="tool-eraser" onclick="setTool('eraser')">🧹<span>Hapus</span></div>
+      </div>
+
+      <div class="canvas-container" id="canvas-container">
+        <canvas id="paintCanvas"></canvas>
+      </div>
+    </div>
+
+    <div class="sub-tools-container">
+      <div class="sub-tools-bar" id="sub-tools-bar"></div>
+    </div>
+
+    <div class="palette-panel" id="palette-panel"></div>
+  </div>
+
+  <div id="screen-storybook-library" class="screen">
+    <div class="storybook-stars"></div>
+    <div class="library-header" style="position: relative; z-index: 10;">
+      <button class="btn-header btn-back btn-bounce" onclick="showScreen('screen-menu')">🏠 Menu</button>
+      <h2 class="library-title">📚 Bioskop Dongeng AI</h2>
+      <div style="width: 85px;"></div>
+    </div>
+    
+    <div class="story-idea-box" style="position: relative; z-index: 10;">
+      <h3>✨ Karang Ceritamu Sendiri (5 Halaman)!</h3>
+      <p style="color:#E2E8F0; margin-bottom:15px; font-size: 1rem; font-weight: 600;">Tulis ide apa saja, AI akan merangkai kisah sambung yang indah untukmu!</p>
+      <div class="idea-input-group">
+        <input type="text" id="custom-story-input" class="idea-input" placeholder="Misal: Putri terbang cari es krim di awan..." onkeypress="if(event.key==='Enter') generateCustomStory()">
+        <button class="btn-idea btn-bounce" style="background: #00C2CB; box-shadow: 0 5px 0 #009096;" onclick="generateCustomStory()">Buat! 🪄</button>
+      </div>
+    </div>
+
+    <h3 style="color: #FFF; font-size: 1.4rem; margin: 0 0 15px 0; text-align:left; width:100%; max-width:800px; position: relative; z-index: 10;">📖 Dongeng Siap Putar:</h3>
+    <div class="story-grid" id="story-library-grid" style="position: relative; z-index: 10;"></div>
+  </div>
+
+  <div id="screen-storybook" class="screen">
+    <div class="storybook-stars"></div>
+    <div class="storybook-header">
+      <button class="btn-header btn-back btn-bounce" onclick="closeStorybookPlayer()">⬅️ Kembali</button>
+      <h2 class="storybook-title">✨ Bioskop Dongeng ✨</h2>
+      <div style="width: 100px;"></div>
+    </div>
+
+    <div class="storybook-content">
+      <div class="story-img-container">
+        <div class="story-loader" id="scene-loader">
+          <span id="scene-loader-icon">🪄</span>
+          <div id="scene-loader-text">Menyiapkan panggung keajaiban...</div>
+        </div>
+        <img id="scene-image" alt="Ilustrasi Adegan">
+      </div>
+
+      <div class="page-indicators" id="scene-indicators"></div>
+
+      <div class="story-text-container">
+        <p class="story-text" id="scene-text">Sstt... Mesin sedang menulis jalan cerita...</p>
+      </div>
+
+      <div class="story-controls">
+        <button class="btn-nav-scene" id="btn-prev-scene" onclick="StoryEngine.prevScene()">⬅️</button>
+        <button class="btn-story-action btn-story-play" id="btn-play-scene" onclick="StoryEngine.playCurrentAudio()">🔊 Putar Suara</button>
+        <button class="btn-nav-scene" id="btn-next-scene" onclick="StoryEngine.nextScene()">➡️</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="global-overlay" id="global-loading">
+    <div class="spinner">🪄</div>
+    <div class="loading-text" id="loading-text-msg">Memproses...</div>
+    <p style="color:#718096; font-size:1.1rem; font-weight:600; text-align:center; max-width:80%; margin-top:10px;" id="loading-subtext">Mohon tunggu sebentar ya!</p>
+  </div>
+
+  <div class="custom-modal" id="custom-modal">
+    <div class="modal-box">
+      <h3 id="modal-title">Pemberitahuan</h3>
+      <p id="modal-msg">Pesan alert di sini</p>
+      <button class="btn-modal btn-bounce" onclick="closeModal()">Oke, Siap! 👍</button>
+    </div>
+  </div>
+
+  <canvas id="confettiCanvas"></canvas>
+
+  <script>
+    let GEMINI_API_KEY = "AQ.Ab8RN6KEcdCQwWM0H4lc5RQm25Cdm9Cdi1NTEJPRQJ7lZGchgQ"; 
+
+    let appData = { name: 'Adik', age: 4, avatar: '🐶' };
+    let currentTool = 'brush'; 
+    let currentColor = '#FF3B30';
+    let currentBrushSize = 18;
+    let currentStamp = '⭐';
+    let isDrawing = false;
+    let canvas, ctx;
+    let undoStack = [];
+    const MAX_UNDO = 10;
+    let currentBaseImageData = null; 
+
+    const colorPalette = [ '#FF3B30', '#FF4757', '#FF9500', '#FF914D', '#FFCC00', '#FFE100', '#7ED957', '#34C759', '#10AC84', '#00C2CB', '#5CE1E6', '#0ABDE3', '#007AFF', '#2E86DE', '#341F97', '#AF52DE', '#9B59B6', '#FF66C4', '#FF9FF3', '#FD79A8', '#FFEAA7', '#8B5A2B', '#2D3748', '#FFFFFF' ];
+    const stampList = ['⭐', '💖', '🎈', '🐾', '👑', '🌈', '🍎', '🚗', '🦋', '🌻'];
+
+    const templatesData = [
+      { id: 'blank', icon: '🎨', title: 'Kanvas Bebas' },
+      { id: 'gadis', icon: '👧', title: 'Gadis Lucu' },
+      { id: 'cat', icon: '🐱', title: 'Kucing' },
+      { id: 'dog', icon: '🐶', title: 'Anjing' },
+      { id: 'bird', icon: '🐦', title: 'Burung' },
+      { id: 'apple', icon: '🍎', title: 'Apel' },
+      { id: 'car', icon: '🚗', title: 'Mobil' },
+      { id: 'fish', icon: '🐟', title: 'Ikan' },
+      { id: 'rocket', icon: '🚀', title: 'Roket' },
+      { id: 'dino', icon: '🦖', title: 'Dinosaurus' },
+      { id: 'butterfly', icon: '🦋', title: 'Kupu-Kupu' },
+      { id: 'icecream', icon: '🍦', title: 'Es Krim' },
+      { id: 'flower', icon: '🌻', title: 'Bunga' },
+      { id: 'lion', icon: '🦁', title: 'Singa' },
+      { id: 'rabbit', icon: '🐰', title: 'Kelinci' }
+    ];
+
+    const predefinedStories = [
+      {
+        id: 'kucing_astronot',
+        icon: '🚀',
+        title: 'Kucing Astronot',
+        desc: 'Petualangan si meong mencari ikan di luar angkasa!',
+        scenes: [
+            { text: "Suatu malam, Mpus si Kucing melihat bulan purnama. 'Wah, pasti itu bola ikan raksasa yang bersinar!' pikirnya bersemangat.", prompt: "A highly detailed, colorful 3D Pixar style cute orange cat wearing a makeshift astronaut helmet looking up at a bright full moon from a bedroom window, masterpiece" },
+            { text: "Wusss! Dengan kardus bekas dan balon terbang, Mpus membuat roket super cepat dan meluncur menembus awan tebal di malam hari.", prompt: "A highly detailed, colorful 3D Pixar style cute orange cat flying in the night sky inside a cardboard box rocket tied to colorful balloons, masterpiece" },
+            { text: "Tibalah ia di luar angkasa yang gelap tapi dipenuhi jutaan bintang yang berkelap-kelip. 'Meong! Indah sekali pemandangan ini!'", prompt: "A highly detailed, colorful 3D Pixar style cute orange cat floating in starry outer space surrounded by glowing stars and tiny planets, masterpiece" },
+            { text: "Saat mendarat di bulan, ia tidak menemukan ikan, melainkan makhluk alien kecil hijau lucu yang memberinya biskuit luar angkasa.", prompt: "A highly detailed, colorful 3D Pixar style cute orange cat meeting a friendly little cute green alien on the moon surface holding a glowing space snack, masterpiece" },
+            { text: "Mpus pun tertidur pulas dalam perjalanan pulang ke bumi. Petualangan yang sangat melelahkan namun luar biasa seru!", prompt: "A highly detailed, colorful 3D Pixar style cute orange cat sleeping peacefully inside its cardboard rocket flying back to earth, masterpiece" }
+        ]
+      },
+      {
+        id: 'hutan_permen',
+        icon: '🍭',
+        title: 'Misteri Hutan Permen',
+        desc: 'Tersesat di hutan dimana pohonnya terbuat dari lolipop!',
+        scenes: [
+            { text: "Pada suatu hari yang cerah, seekor kelinci bernama Boni sedang melompat-lompat riang hingga ia menemukan sebuah pintu ajaib di balik semak-semak.", prompt: "A highly detailed, colorful 3D Pixar style cute white rabbit looking at a glowing magical wooden door hidden inside green bushes, masterpiece" },
+            { text: "Krieeet! Boni membuka pintunya dan terkejut! Ia masuk ke hutan di mana semua pohonnya terbuat dari permen lolipop warna-warni.", prompt: "A highly detailed, colorful 3D Pixar style cute white rabbit standing in a magical forest where all trees are giant colorful lollipops and the grass is made of cotton candy, masterpiece" },
+            { text: "Nyam nyam! Boni menggigit sebuah rumput yang ternyata rasanya seperti gulali kapas yang manis. Ia sangat bahagia!", prompt: "A highly detailed, colorful 3D Pixar style cute white rabbit happily eating pink cotton candy grass in a candy forest, masterpiece" },
+            { text: "Tiba-tiba, datanglah beruang madu ramah yang memakai topi koki. 'Hai Boni, maukah kamu mencicipi kue pai madu buatanku?' sapanya.", prompt: "A highly detailed, colorful 3D Pixar style cute friendly bear wearing a chef hat offering a delicious honey pie to a small rabbit, masterpiece" },
+            { text: "Mereka pun piknik bersama di tengah hutan permen sambil tertawa bahagia. Ini adalah tempat paling manis di seluruh dunia!", prompt: "A highly detailed, colorful 3D Pixar style cute white rabbit and bear having a happy picnic eating sweets in a candy forest, masterpiece" }
+        ]
+      },
+      {
+        id: 'dino_pemalu',
+        icon: '🦖',
+        title: 'Dino Si Pemalu',
+        desc: 'Kisah anak dinosaurus yang belajar berani dan punya banyak teman.',
+        scenes: [
+            { text: "Dino adalah seekor anak dinosaurus hijau yang sangat pemalu. Ia lebih suka bersembunyi di balik daun pakis yang besar.", prompt: "A highly detailed, colorful 3D Pixar style cute little green baby dinosaur hiding shyly behind a huge green fern leaf, masterpiece" },
+            { text: "Suatu hari, ia mendengar suara tangisan kecil. Seekor anak burung merpati terjatuh dari sarangnya dan tidak bisa terbang.", prompt: "A highly detailed, colorful 3D Pixar style cute little green baby dinosaur looking worried at a tiny baby bird fallen on the ground, masterpiece" },
+            { text: "Meskipun takut, Dino memberanikan diri maju ke depan dan menggunakan ekornya yang lembut untuk mengangkat anak burung itu kembali ke sarangnya.", prompt: "A highly detailed, colorful 3D Pixar style cute little green baby dinosaur gently lifting a tiny bird back to its nest using its soft tail, masterpiece" },
+            { text: "Induk burung sangat berterima kasih dan memanggil semua hewan hutan untuk merayakan keberanian Dino bersama-sama.", prompt: "A highly detailed, colorful 3D Pixar style cute little green baby dinosaur surrounded by happy forest animals cheering and smiling, masterpiece" },
+            { text: "Sejak hari itu, Dino tidak pemalu lagi. Ia punya banyak teman baru dan gemar membantu siapa saja yang kesusahan.", prompt: "A highly detailed, colorful 3D Pixar style cute little green baby dinosaur playing happily and laughing with many animal friends in a sunny valley, masterpiece" }
+        ]
+      },
+      {
+        id: 'putri_awan',
+        icon: '👑',
+        title: 'Putri Kerajaan Awan',
+        desc: 'Petualangan mencari pelangi yang hilang di atas langit.',
+        scenes: [
+            { text: "Di atas awan putih yang lembut, hiduplah seorang putri kecil bernama Loly yang bertugas menjaga keindahan warna langit.", prompt: "A highly detailed, colorful 3D Pixar style cute little princess wearing a glowing crown sitting on a soft fluffy white cloud castle, masterpiece" },
+            { text: "Suatu pagi, Loly terkejut melihat jembatan pelangi di langit tiba-tiba memudar dan kehilangan semua warnanya menjadi abu-abu.", prompt: "A highly detailed, colorful 3D Pixar style cute little princess looking shocked at a faded gray rainbow arching over fluffy clouds, masterpiece" },
+            { text: "Dengan menaiki awan ajaib kesayangannya, Loly terbang mengelilingi angkasa untuk mencari tetesan cat warna bintang.", prompt: "A highly detailed, colorful 3D Pixar style cute little princess riding a friendly smiling magical cloud flying through starry skies, masterpiece" },
+            { text: "Ia menemukan wadah ajaib berisi serbuk warna merah, kuning, dan biru di istana matahari terbit yang megah.", prompt: "A highly detailed, colorful 3D Pixar style cute little princess discovering glowing magic jars filled with red, yellow, and blue sparkling dust inside a golden sunrise palace, masterpiece" },
+            { text: "Loly menaburkan serbuk itu ke langit, dan seketika pelangi kembali bersinar sangat indah. Seluruh penduduk langit bersorak gembira!", prompt: "A highly detailed, colorful 3D Pixar style cute little princess scattering colorful sparkling dust creating a vibrant brilliant rainbow across the sky, masterpiece" }
+        ]
+      },
+      {
+        id: 'mobil_pemadam',
+        icon: '🚒',
+        title: 'Mobil Pemadam Setia',
+        desc: 'Aksi heroik si Merah menolong warga kota mainan.',
+        scenes: [
+            { text: "Red adalah mobil pemadam kebakaran merah yang selalu siaga di garasi kota mainan menanti panggilan darurat.", prompt: "A highly detailed, colorful 3D Pixar style cute friendly red toy fire truck parked inside a bright cozy toy station, masterpiece" },
+            { tict: "Tiba-tiba, lampu sirine berbunyi nyaring! 'Nguweng nguweng!' Ada pohon kue bolu di taman kota yang tidak sengaja terbakar lilinnya.", prompt: "A highly detailed, colorful 3D Pixar style cute red toy fire truck with flashing blue lights rushing out of its station to help, masterpiece" },
+            { text: "Red melaju kencang melewati jalanan permen karet dengan semangat membara untuk menyelamatkan kota.", prompt: "A highly detailed, colorful 3D Pixar style cute red toy fire truck speeding through a colorful toy town street with joyful determination, masterpiece" },
+            { text: "Setibanya di sana, Red dengan sigap menyemprotkan air segar dari selangnya hingga api di kue bolu padam seketika.", prompt: "A highly detailed, colorful 3D Pixar style cute red toy fire truck spraying a stream of sparkling water from its hose onto a giant sweet cake with candles, masterpiece" },
+            { text: "Warga kota mainan bertepuk tangan meriah dan memberi Red sekotak donat manis sebagai tanda terima kasih.", prompt: "A highly detailed, colorful 3D Pixar style cute red toy fire truck surrounded by cheerful smiling toy citizens celebrating happily, masterpiece" }
+        ]
+      },
+      {
+        id: 'petualang_laut',
+        icon: '🐬',
+        title: 'Lumba-Lumba Penyelam',
+        desc: 'Menemukan mutiara ajaib di dasar samudra biru.',
+        scenes: [
+            { text: "Dipi si lumba-lumba biru suka berenang menembus ombak laut tropis yang jernih bersama kura-kura bijak.", prompt: "A highly detailed, colorful 3D Pixar style cute blue dolphin swimming joyfully in clear tropical blue ocean water next to a friendly sea turtle, masterpiece" },
+            { text: "Suatu hari, mereka melihat kilauan cahaya pelangi misterius yang berasal dari dasar palung karang yang dalam.", prompt: "A highly detailed, colorful 3D Pixar style cute blue dolphin looking down curiously at a glowing mystical rainbow light coming from deep coral reefs, masterpiece" },
+            { text: "Di sana, mereka menemukan kerang raksasa yang berisi mutiara ajaib yang dapat membuat tanaman laut bernyanyi.", prompt: "A highly detailed, colorful 3D Pixar style cute blue dolphin and sea turtle looking at a giant open clamshell holding a glowing magical pearl, masterpiece" },
+            { text: "Tiba-tiba, seekor gurita kecil tersangkut jaring ikan tua di dekat karang. Dipi segera membantu melepaskannya.", prompt: "A highly detailed, colorful 3D Pixar style cute blue dolphin gently using its nose to untangle a cute small octopus trapped in old nets, masterpiece" },
+            { text: "Sebagai ucapan terima kasih, mutiara ajaib itu memancarkan cahaya terang yang membuat seluruh terumbu karang menari indah.", prompt: "A highly detailed, colorful 3D Pixar style cute blue dolphin and happy sea creatures dancing around a brilliantly glowing underwater coral garden, masterpiece" }
+        ]
+      },
+      {
+        id: 'beruang_madu',
+        icon: '🍯',
+        title: 'Pencari Madu Sejati',
+        desc: 'Kisah si gemuk ceroboh yang mencari sarang madu emas.',
+        scenes: [
+            { text: "Banu si beruang cokelat gemuk sangat menyukai madu manis. Perutnya mulai keroncongan menandakan waktu sarapan tiba.", prompt: "A highly detailed, colorful 3D Pixar style cute chubby brown bear rubbing its tummy with a hungry happy expression in a green forest, masterpiece" },
+            { text: "Ia mengikuti sekelompok lebah kecil yang terbang membawa tetesan madu segar menuju bukit bunga matahari.", prompt: "A highly detailed, colorful 3D Pixar style cute chubby brown bear tiptoeing happily while following tiny buzzing cute bees through a sunflower field, masterpiece" },
+            { text: "Sesampainya di atas bukit, Banu menemukan sarang lebah terbesar yang pernah ada di dalam rongga pohon tua.", prompt: "A highly detailed, colorful 3D Pixar style cute chubby brown bear staring in awe at a massive golden honeycomb hanging from an old hollow oak tree, masterpiece" },
+            { text: "Alih-alih melahapnya sendiri, Banu membagikan separuh madunya kepada lebah-lebah kecil dan teman-teman hewannya.", prompt: "A highly detailed, colorful 3D Pixar style cute chubby brown bear generously sharing sweet golden honey drops with friendly bees and forest squirrels, masterpiece" },
+            { text: "Mereka makan bersama dengan lahap sambil tertawa riang. Hari itu adalah hari paling manis dalam hidup Banu!", prompt: "A highly detailed, colorful 3D Pixar style cute chubby brown bear and happy forest animals licking sweet honey and smiling broadly, masterpiece" }
+        ]
+      },
+      {
+        id: 'pangeran_kodok',
+        icon: '🐸',
+        title: 'Pangeran Katak Ceria',
+        desc: 'Melompat mencari mahkota emas di danau teratai.',
+        scenes: [
+            { text: "Kiko adalah seekor katak hijau kecil yang memakai mahkota emas mungil di atas kepalanya yang lonjong.", prompt: "A highly detailed, colorful 3D Pixar style cute little green frog wearing a tiny shiny golden crown sitting on a big green lotus leaf, masterpiece" },
+            { text: "Hari ini adalah hari ulang tahunnya, tetapi mahkota emas kesayangannya tidak sengaja jatuh ke dasar danau teratai yang dalam.", prompt: "A highly detailed, colorful 3D Pixar style cute little green frog looking sad while staring down into sparkling blue lake water where a crown fell, masterpiece" },
+            { text: "Kiko melompat 'Hop!' ke dalam air dan berenang lincah di antara akar-akar tanaman teratai yang rimbun.", prompt: "A highly detailed, colorful 3D Pixar style cute little green frog swimming energetically underwater among beautiful green lotus stems and tiny fish, masterpiece" },
+            { text: "Seekor ikan mas ajaib membantu Kiko menemukan mahkotanya yang tersangkut di balik cangkang kerang mutiara.", prompt: "A highly detailed, colorful 3D Pixar style cute little green frog receiving its tiny golden crown back from a friendly smiling golden fish, masterpiece" },
+            { text: "Dengan mahkota kembali di kepala, Kiko mengadakan pesta dansa air bersama seluruh katak dan ikan di danau.", prompt: "A highly detailed, colorful 3D Pixar style cute little green frog wearing a golden crown surrounded by cheerful frogs and fish splashing water happily, masterpiece" }
+        ]
+      },
+      {
+        id: 'burung_pelangi',
+        icon: '🦜',
+        title: 'Burung Pelangi Ajaib',
+        desc: 'Membawa pesan kedamaian ke ujung dunia.',
+        scenes: [
+            { text: "Kiki adalah burung paruh bengkok dengan bulu-bulu seindah pelangi yang tinggal di puncak pohon tertinggi di hutan tropis.", prompt: "A highly detailed, colorful 3D Pixar style cute exotic parrot with brilliant rainbow-colored feathers perched on a lush green jungle branch, masterpiece" },
+            { text: "Ia mendapat tugas penting dari raja hutan untuk mengantarkan benih bunga kebahagiaan ke lembah seberang.", prompt: "A highly detailed, colorful 3D Pixar style cute rainbow parrot holding a glowing magic seed gently in its beak ready for a long flight, masterpiece" },
+            { text: "Di tengah perjalanan, angin badai bertiup kencang membuat Kiki harus terbang meliuk-liuk menghindari awan gelap.", prompt: "A highly detailed, colorful 3D Pixar style cute rainbow parrot flying skillfully through swirling windy clouds and bright lightning sparkles, masterpiece" },
+            { text: "Ia berhasil mendarat di lembah tandus dan menanam benih ajaib tersebut ke dalam tanah yang subur.", prompt: "A highly detailed, colorful 3D Pixar style cute rainbow parrot planting a glowing magical seed into rich brown soil in a quiet valley, masterpiece" },
+            { text: "Sekejap mata, lembah tandus itu berubah menjadi kebun bunga warna-warni yang sangat harum dan mempesona!", prompt: "A highly detailed, colorful 3D Pixar style cute rainbow parrot flying happily over a vast valley blooming with vibrant multicolored flowers, masterpiece" }
+        ]
+      },
+      {
+        id: 'robot_baik',
+        icon: '🤖',
+        title: 'Robot Pintar Yang Baik',
+        desc: 'Menolong warga kota masa depan merawat tanaman.',
+        scenes: [
+            { text: "Robo adalah robot besi berwarna putih mengkilap yang memiliki layar senyum digital di wajahnya.", prompt: "A highly detailed, colorful 3D Pixar style cute friendly white metal robot with glowing blue digital eyes and a smiley face screen, masterpiece" },
+            { text: "Kota tempat tinggalnya sangat canggih dan bersih, tetapi penduduknya lupa cara menanam bunga di taman kota.", prompt: "A highly detailed, colorful 3D Pixar style cute friendly robot standing in a futuristic city park filled with metallic buildings and grey soil, masterpiece" },
+            { text: "Robo mengeluarkan kotak benih ajaib dari dada batunya dan membagikannya kepada anak-anak kecil.", prompt: "A highly detailed, colorful 3D Pixar style cute friendly robot opening its chest compartment to gently hand out seed packets to smiling children, masterpiece" },
+            { text: "Dengan bantuan tangan mekaniknya yang cekatan, Robo menyiram tanah setiap hari hingga tunas hijau mulai tumbuh.", prompt: "A highly detailed, colorful 3D Pixar style cute friendly robot spraying sparkling water from its robotic arm onto tiny green sprouts, masterpiece" },
+            { text: "Kini kota masa depan itu dipenuhi bunga-bunga indah berwarna-warni berkat kebaikan hati si robot pintar.", prompt: "A highly detailed, colorful 3D Pixar style cute friendly robot surrounded by children and vibrant blossoming flowers in a bright futuristic city, masterpiece" }
+        ]
+      }
+    ];
+
+    const AudioEngine = {
+      ctx: null,
+      init() { if (!this.ctx) { const AudioCtx = window.AudioContext || window.webkitAudioContext; if (AudioCtx) this.ctx = new AudioCtx(); } },
+      playPop() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+        osc.type = 'sine'; osc.frequency.setValueAtTime(400, this.ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.start(); osc.stop(this.ctx.currentTime + 0.08);
+      },
+      playSplash() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+        osc.type = 'triangle'; osc.frequency.setValueAtTime(200, this.ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(500, this.ctx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.4, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.start(); osc.stop(this.ctx.currentTime + 0.2);
+      },
+      playMagic() {
+        if (!this.ctx) return;
+        [400, 600, 800].forEach((freq, i) => {
+          const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+          osc.type = 'sine'; osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i*0.1);
+          gain.gain.setValueAtTime(0.2, this.ctx.currentTime + i*0.1); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + i*0.1 + 0.2);
+          osc.connect(gain); gain.connect(this.ctx.destination); osc.start(this.ctx.currentTime + i*0.1); osc.stop(this.ctx.currentTime + i*0.1 + 0.2);
+        });
+      },
+      playFanfare() {
+        if (!this.ctx) return;
+        const notes = [261.63, 329.63, 392.00, 523.25];
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+          osc.type = 'sine'; osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.1);
+          gain.gain.setValueAtTime(0.3, this.ctx.currentTime + idx * 0.1); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.1 + 0.3);
+          osc.connect(gain); gain.connect(this.ctx.destination); osc.start(this.ctx.currentTime + idx * 0.1); osc.stop(this.ctx.currentTime + idx * 0.1 + 0.3);
+        });
+      }
+    };
+
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'id-ID'; utterance.rate = 1.0; utterance.pitch = 1.2;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      buildPaletteUI(); setupSubToolsBar(); renderMenuGrid(); initCanvas(); renderStoryLibrary();
+    });
+
+    function renderMenuGrid() {
+      const grid = document.getElementById('template-grid');
+      grid.innerHTML = '';
+      templatesData.forEach(t => {
+        const card = document.createElement('div'); card.className = 'card-template btn-bounce'; 
+        card.onclick = () => {
+            if (t.id === 'blank') openBlankStudio(); else generateColoringPage(t.title);
+        };
+        let iconHtml = `<span style="font-size: 3.5rem;">${t.icon}</span>`;
+        if (t.id === 'blank') iconHtml = `<span style="font-size: 3.5rem;">🎨</span>`;
+        card.innerHTML = `<div class="icon-holder" ${t.id === 'blank' ? 'style="background: #FFF5F5;"' : ''}>${iconHtml}</div><span class="template-title">${t.title}</span>`;
+        grid.appendChild(card);
+      });
+    }
+
+    function showScreen(screenId) {
+      AudioEngine.init(); AudioEngine.playPop();
+      document.querySelectorAll('.screen').forEach(scr => scr.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    function selectAvatar(avatarEmoji, el) { AudioEngine.init(); AudioEngine.playPop(); appData.avatar = avatarEmoji; document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected')); el.classList.add('selected'); }
+    function selectAge(ageNum, el) { AudioEngine.init(); AudioEngine.playPop(); appData.age = ageNum; document.querySelectorAll('.age-pill').forEach(pill => pill.classList.remove('selected')); el.classList.add('selected'); }
+
+    function handleStartGame() {
+      const nameInput = document.getElementById('child-name').value.trim();
+      if (!nameInput) { showCustomModal("Halo Manis! 😊", "Isi dulu nama kamu ya!"); return; }
+      appData.name = nameInput;
+      document.getElementById('user-avatar-display').innerText = appData.avatar;
+      document.getElementById('user-name-display').innerText = appData.name;
+      document.getElementById('user-age-display').innerText = `${appData.age} Tahun`;
+      showScreen('screen-menu');
+      speakText(`Halo ${appData.name}! Mau menggambar atau mendengarkan dongeng hari ini?`);
+    }
+
+    function showCustomModal(title, message) { document.getElementById('modal-title').innerText = title; document.getElementById('modal-msg').innerText = message; document.getElementById('custom-modal').classList.add('active'); }
+    function closeModal() { AudioEngine.playPop(); document.getElementById('custom-modal').classList.remove('active'); }
+
+    function handleIdeaKeypress(e) { if (e.key === 'Enter') handleIdeaSubmit(); }
+    function quickSelectIdea(keyword) { document.getElementById('idea-input-field').value = keyword; handleIdeaSubmit(); }
+
+    async function handleIdeaSubmit() {
+      const inputField = document.getElementById('idea-input-field');
+      const input = inputField.value.trim();
+      if (!input) { showCustomModal("Ups! 💡", "Tulis idemu dulu ya!"); return; }
+      AudioEngine.init(); AudioEngine.playMagic();
+      inputField.value = '';
+      await generateColoringPage(input);
+    }
+
+    function getAIMasterPrompt(keyword) {
+        return `Create a clean black-and-white children's coloring book illustration based on the provided reference idea: "${keyword}". Recreate a cute composition, character design, proportions, pose, and visual hierarchy as closely as possible.
+STYLE: Cute kawaii children's coloring page, simple hand-drawn cartoon line art, thick smooth black outlines, white background, pure black linework only, no color, no shading.`;
+    }
+
+    async function generateColoringPage(keyword) {
+      showScreen('screen-studio');
+      const overlay = document.getElementById('global-loading');
+      document.getElementById('loading-text-msg').innerText = `Melukis ${keyword}... 🪄`;
+      document.getElementById('loading-subtext').innerText = "Mesin AI sedang menggambar sketsa hitam putih khusus untukmu.";
+      overlay.classList.add('active');
+
+      const promptText = getAIMasterPrompt(keyword);
+
+      try {
+        const payload = { contents: [{ role: 'user', parts: [{ text: promptText }] }], generationConfig: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: "3:4" } } };
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=${GEMINI_API_KEY}`;
+        
+        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (!response.ok) throw new Error("Koneksi API ditolak.");
+        const result = await response.json();
+        const part = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+        
+        if (part && part.inlineData) {
+            const imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+            processAndDrawAILineArt(imageUrl);
+        } else {
+            throw new Error("Gambar gagal dibuat.");
+        }
+      } catch (err) {
+         drawFallbackLineArt(keyword);
+      } finally {
+         overlay.classList.remove('active');
+      }
+    }
+
+    function drawFallbackLineArt(keyword) {
+        resizeCanvas(); resetCanvasBackground();
+        ctx.fillStyle = '#2D3748';
+        ctx.font = 'bold 80px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🎨', canvas.width/2, canvas.height/2 - 60);
+        ctx.font = 'bold 36px var(--font-main, sans-serif)';
+        ctx.fillText(keyword.toUpperCase(), canvas.width/2, canvas.height/2 + 20);
+        currentBaseImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        undoStack = []; saveUndoState();
+    }
+
+    function processAndDrawAILineArt(imageUrl) {
+        const img = new Image();
+        img.onload = () => {
+            resizeCanvas(); resetCanvasBackground();
+            const scale = Math.min(canvas.width / img.width, canvas.height / img.height) * 0.95; 
+            const w = img.width * scale; const h = img.height * scale;
+            const x = (canvas.width - w) / 2; const y = (canvas.height - h) / 2;
+            ctx.drawImage(img, x, y, w, h);
+            
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imgData.data;
+            for(let i = 0; i < data.length; i += 4) {
+                const brightness = (data[i] + data[i+1] + data[i+2]) / 3;
+                if (brightness > 200) { data[i] = 255; data[i+1] = 255; data[i+2] = 255; data[i+3] = 255; } 
+                else { data[i] = 45; data[i+1] = 55; data[i+2] = 72; data[i+3] = 255; }
+            }
+            ctx.putImageData(imgData, 0, 0);
+            currentBaseImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            undoStack = []; saveUndoState();
+        };
+        img.src = imageUrl;
+    }
+
+    function openBlankStudio() {
+      showScreen('screen-studio');
+      setTimeout(() => {
+        resizeCanvas(); resetCanvasBackground();
+        currentBaseImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        undoStack = []; saveUndoState();
+      }, 100);
+    }
+
+    function initCanvas() {
+      canvas = document.getElementById('paintCanvas'); ctx = canvas.getContext('2d', { willReadFrequently: true });
+      resizeCanvas(); window.addEventListener('resize', resizeCanvas);
+      canvas.addEventListener('pointerdown', handlePointerDown); canvas.addEventListener('pointermove', handlePointerMove);
+      canvas.addEventListener('pointerup', handlePointerUp); canvas.addEventListener('pointercancel', handlePointerUp);
+    }
+    function resizeCanvas() {
+      const container = document.getElementById('canvas-container'); if (!container || !canvas) return;
+      let tempImage = null; if (canvas.width > 0 && canvas.height > 0) tempImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      canvas.width = container.clientWidth; canvas.height = container.clientHeight;
+      if (tempImage) ctx.putImageData(tempImage, 0, 0); else resetCanvasBackground();
+    }
+    function resetCanvasBackground() { ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+    function saveUndoState() { if (undoStack.length >= MAX_UNDO) undoStack.shift(); undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); }
+    function undoCanvas() { AudioEngine.playPop(); if (undoStack.length > 1) { undoStack.pop(); ctx.putImageData(undoStack[undoStack.length - 1], 0, 0); } else if (undoStack.length === 1) { ctx.putImageData(undoStack[0], 0, 0); } }
+    function clearCanvas() { AudioEngine.playPop(); if (currentBaseImageData) { ctx.putImageData(currentBaseImageData, 0, 0); undoStack = [currentBaseImageData]; } else { resetCanvasBackground(); undoStack = []; saveUndoState(); } }
+    
+    function getCanvasCoords(e) { const rect = canvas.getBoundingClientRect(); return { x: e.clientX - rect.left, y: e.clientY - rect.top }; }
+    function handlePointerDown(e) {
+      e.preventDefault(); AudioEngine.init(); const pos = getCanvasCoords(e);
+      if (currentTool === 'bucket') { saveUndoState(); floodFill(Math.round(pos.x), Math.round(pos.y), currentColor); AudioEngine.playSplash(); return; }
+      if (currentTool === 'stamp') { saveUndoState(); drawStamp(pos.x, pos.y); AudioEngine.playPop(); return; }
+      saveUndoState(); isDrawing = true; ctx.beginPath(); ctx.moveTo(pos.x, pos.y); drawPointOrLine(pos.x, pos.y);
+    }
+    function handlePointerMove(e) { if (!isDrawing) return; e.preventDefault(); const pos = getCanvasCoords(e); drawPointOrLine(pos.x, pos.y); }
+    function handlePointerUp(e) { if (isDrawing) { isDrawing = false; ctx.beginPath(); } }
+
+    function drawPointOrLine(x, y) {
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      if (currentTool === 'eraser') { ctx.globalCompositeOperation = 'source-over'; ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = currentBrushSize * 1.5; ctx.lineTo(x, y); ctx.stroke(); } 
+      else if (currentTool === 'brush') { ctx.globalCompositeOperation = 'multiply'; ctx.strokeStyle = currentColor; ctx.lineWidth = currentBrushSize; ctx.lineTo(x, y); ctx.stroke(); ctx.globalCompositeOperation = 'source-over'; } 
+      else if (currentTool === 'magic') { ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = colorPalette[Math.floor(Math.random() * colorPalette.length)]; for (let i = 0; i < 3; i++) { const offsetX = (Math.random() - 0.5) * 25; const offsetY = (Math.random() - 0.5) * 25; ctx.beginPath(); ctx.arc(x + offsetX, y + offsetY, Math.random() * 6 + 2, 0, Math.PI * 2); ctx.fill(); } }
+    }
+    function drawStamp(x, y) { ctx.globalCompositeOperation = 'source-over'; ctx.font = `${currentBrushSize * 2.5}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(currentStamp, x, y); }
+
+    function floodFill(startX, startY, fillColorHex) {
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height); const data = imgData.data; const targetColor = getPixelColor(data, startX, startY); const fillColor = hexToRgb(fillColorHex);
+      if (colorsMatch(targetColor, fillColor, 10)) return;
+      const targetBrightness = (targetColor[0] + targetColor[1] + targetColor[2]) / 3; if (targetBrightness < 100) return; 
+
+      const queue = [[startX, startY]]; const width = canvas.width, height = canvas.height;
+      while (queue.length > 0) {
+        const [x, y] = queue.pop(); const currentIdx = (y * width + x) * 4;
+        if (x < 0 || x >= width || y < 0 || y >= height) continue;
+        const currentColor = [data[currentIdx], data[currentIdx+1], data[currentIdx+2], data[currentIdx+3]];
+        if (colorsMatch(currentColor, targetColor, 40)) {
+          setPixelColor(data, currentIdx, fillColor);
+          queue.push([x + 1, y]); queue.push([x - 1, y]); queue.push([x, y + 1]); queue.push([x, y - 1]);
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+      if (currentBaseImageData) blendOutline(currentBaseImageData);
+    }
+    function blendOutline(baseImageData) { const canvasData = ctx.getImageData(0, 0, canvas.width, canvas.height); for (let i = 0; i < canvasData.data.length; i += 4) { const baseBrightness = (baseImageData.data[i] + baseImageData.data[i+1] + baseImageData.data[i+2]) / 3; if (baseBrightness < 100) { canvasData.data[i] = baseImageData.data[i]; canvasData.data[i+1] = baseImageData.data[i+1]; canvasData.data[i+2] = baseImageData.data[i+2]; } } ctx.putImageData(canvasData, 0, 0); }
+    function getPixelColor(data, x, y) { const idx = (y * canvas.width + x) * 4; return [data[idx], data[idx+1], data[idx+2], data[idx+3]]; }
+    function setPixelColor(data, idx, color) { data[idx] = color[0]; data[idx+1] = color[1]; data[idx+2] = color[2]; data[idx+3] = 255; }
+    function colorsMatch(c1, c2, tol = 20) { return Math.abs(c1[0]-c2[0])<=tol && Math.abs(c1[1]-c2[1])<=tol && Math.abs(c1[2]-c2[2])<=tol; }
+    function hexToRgb(hex) { let c = hex.replace('#', ''); if(c.length===3) c=c.split('').map(x=>x+x).join(''); const num = parseInt(c, 16); return [(num>>16)&255, (num>>8)&255, num&255]; }
+
+    function setTool(toolName) { AudioEngine.playPop(); currentTool = toolName; document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active')); document.getElementById(`tool-${toolName}`).classList.add('active'); setupSubToolsBar(); }
+    function setupSubToolsBar() {
+      const subBar = document.getElementById('sub-tools-bar'); subBar.innerHTML = '';
+      if (currentTool === 'brush' || currentTool === 'eraser' || currentTool === 'magic') {
+        [10, 20, 32].forEach(sz => {
+          const dot = document.createElement('div'); dot.className = `size-dot ${currentBrushSize === sz ? 'selected' : ''}`; dot.style.width = `${sz * 0.8 + 10}px`; dot.style.height = `${sz * 0.8 + 10}px`;
+          dot.onclick = () => { AudioEngine.playPop(); currentBrushSize = sz; setupSubToolsBar(); }; subBar.appendChild(dot);
+        });
+      } else if (currentTool === 'stamp') {
+        stampList.forEach(st => {
+          const item = document.createElement('div'); item.className = `stamp-item btn-bounce ${currentStamp === st ? 'selected' : ''}`; item.innerText = st;
+          item.onclick = () => { AudioEngine.playPop(); currentStamp = st; setupSubToolsBar(); }; subBar.appendChild(item);
+        });
+      }
+    }
+
+    function buildPaletteUI() {
+      const panel = document.getElementById('palette-panel'); panel.innerHTML = '';
+      colorPalette.forEach((hex) => {
+        const swatch = document.createElement('div'); swatch.className = `swatch btn-bounce ${currentColor === hex ? 'active' : ''}`; swatch.style.background = hex;
+        swatch.onclick = () => { AudioEngine.playPop(); currentColor = hex; document.querySelectorAll('.swatch, .color-picker-wrapper').forEach(s => s.classList.remove('active')); swatch.classList.add('active'); if (currentTool === 'eraser') setTool('brush'); };
+        panel.appendChild(swatch);
+      });
+      const pickerWrapper = document.createElement('div'); pickerWrapper.className = `color-picker-wrapper btn-bounce ${!colorPalette.includes(currentColor) ? 'active' : ''}`; pickerWrapper.innerHTML = `<span>➕</span><input type="color" id="custom-color-input" value="${currentColor}">`;
+      const colorInput = pickerWrapper.querySelector('input');
+      colorInput.addEventListener('input', (e) => { currentColor = e.target.value; document.querySelectorAll('.swatch, .color-picker-wrapper').forEach(s => s.classList.remove('active')); pickerWrapper.classList.add('active'); if (currentTool === 'eraser') setTool('brush'); });
+      pickerWrapper.addEventListener('click', () => { AudioEngine.playPop(); document.querySelectorAll('.swatch, .color-picker-wrapper').forEach(s => s.classList.remove('active')); pickerWrapper.classList.add('active'); currentColor = colorInput.value; if (currentTool === 'eraser') setTool('brush'); });
+      panel.appendChild(pickerWrapper);
+    }
+
+    function saveArtwork() { AudioEngine.playFanfare(); triggerConfetti(); speakText(`Hebat sekali ${appData.name}! Gambar kamu bagus banget!`); setTimeout(() => { const link = document.createElement('a'); link.download = `Karya-${appData.name}.png`; link.href = canvas.toDataURL('image/png'); link.click(); showCustomModal("Wah, Bagus Banget! 🎉", "Mahakarya sudah disimpan ke komputermu!"); }, 600); }
+    function triggerConfetti() {
+      const confettiCanvas = document.getElementById('confettiCanvas'); const cCtx = confettiCanvas.getContext('2d'); confettiCanvas.width = window.innerWidth; confettiCanvas.height = window.innerHeight;
+      const particles = []; const colors = ['#FF3B30', '#FFCC00', '#34C759', '#00C2CB', '#FF66C4', '#AF52DE'];
+      for (let i = 0; i < 70; i++) particles.push({ x: Math.random() * confettiCanvas.width, y: Math.random() * confettiCanvas.height - confettiCanvas.height, size: Math.random() * 12 + 6, color: colors[Math.floor(Math.random() * colors.length)], speedY: Math.random() * 5 + 3, speedX: (Math.random() - 0.5) * 4, rotation: Math.random() * 360 });
+      let frame = 0;
+      function animateConfetti() { cCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height); particles.forEach(p => { p.y += p.speedY; p.x += p.speedX; p.rotation += 4; cCtx.save(); cCtx.translate(p.x, p.y); cCtx.rotate((p.rotation * Math.PI) / 180); cCtx.fillStyle = p.color; cCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size); cCtx.restore(); }); frame++; if (frame < 120) requestAnimationFrame(animateConfetti); else cCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height); }
+      animateConfetti();
+    }
+
+    function base64ToArrayBuffer(base64) { const binaryString = window.atob(base64); const len = binaryString.length; const bytes = new Uint8Array(len); for (let i = 0; i < len; i++) bytes[i] = binaryString.charCodeAt(i); return bytes.buffer; }
+    function pcmToWav(pcm16, sampleRate) { const numChannels = 1; const byteRate = sampleRate * numChannels * 2; const blockAlign = numChannels * 2; const dataSize = pcm16.length * 2; const buffer = new ArrayBuffer(44 + dataSize); const view = new DataView(buffer); const writeString = (offset, string) => { for (let i = 0; i < string.length; i++) view.setUint8(offset + i, string.charCodeAt(i)); }; writeString(0, 'RIFF'); view.setUint32(4, 36 + dataSize, true); writeString(8, 'WAVE'); writeString(12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, numChannels, true); view.setUint32(24, sampleRate, true); view.setUint32(28, byteRate, true); view.setUint16(32, blockAlign, true); view.setUint16(34, 16, true); writeString(36, 'data'); view.setUint32(40, dataSize, true); let offset = 44; for (let i = 0; i < pcm16.length; i++, offset += 2) view.setInt16(offset, pcm16[i], true); return new Blob([view], { type: 'audio/wav' }); }
+
+    function renderStoryLibrary() {
+      const grid = document.getElementById('story-library-grid');
+      grid.innerHTML = '';
+      predefinedStories.forEach(story => {
+        const card = document.createElement('div');
+        card.className = 'story-card btn-bounce';
+        card.onclick = () => playPredefinedStory(story.id);
+        card.innerHTML = `
+          <div class="story-icon">${story.icon}</div>
+          <h4 class="story-card-title">${story.title}</h4>
+          <p class="story-card-desc">${story.desc}</p>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function openStorybook() {
+        AudioEngine.playPop();
+        showScreen('screen-storybook-library');
+    }
+
+    async function generateCustomStory() {
+        const inputEl = document.getElementById('custom-story-input');
+        const idea = inputEl.value.trim();
+        if(!idea) { showCustomModal("Ups! 💡", "Tulis dulu idemu di kotak putih ya!"); return; }
+        
+        AudioEngine.playPop();
+        inputEl.value = ''; 
+        await StoryEngine.startNew(true, idea);
+    }
+
+    function playPredefinedStory(storyId) {
+        AudioEngine.playPop();
+        const story = predefinedStories.find(s => s.id === storyId);
+        if(story) {
+            StoryEngine.startNew(false, "", story.scenes);
+        }
+    }
+
+    function closeStorybookPlayer() {
+        StoryEngine.stopAudio();
+        showScreen('screen-storybook-library');
+    }
+
+    const StoryEngine = {
+        scenes: [],
+        currentIndex: 0,
+        currentAudioNode: null,
+
+        async startNew(isCustomIdea = false, customIdeaText = "", preloadedScenes = null) {
+            AudioEngine.init(); AudioEngine.playMagic();
+            this.stopAudio();
+            this.scenes = [];
+            this.currentIndex = 0;
+
+            const overlay = document.getElementById('global-loading');
+            overlay.classList.add('active'); 
+
+            try {
+                let scenesData = [];
+
+                if (isCustomIdea) {
+                    document.getElementById('loading-text-msg').innerText = "1. Menyusun 5 Halaman Cerita... ✍️";
+                    document.getElementById('loading-subtext').innerText = `Merangkai kisah sambung yang indah untuk: "${customIdeaText}".`;
+
+                    const textPrompt = `Buatlah sebuah cerita anak pendek yang terdiri dari TEPAT 5 HALAMAN/ADEGAN yang saling bersambung berurutan dari awal sampai akhir berdasarkan ide utama: "${customIdeaText}".
+
+ATURAN MUTLAK:
+1. Tanpa kata sambutan atau sapaan, langsung mulai cerita di halaman 1.
+2. Tentukan 1 karakter utama yang sama yang konsisten di semua halaman.
+3. Pisahkan setiap halaman menggunakan pemisah persis: "---HALAMAN---" di antara halaman 1, 2, 3, 4, dan 5.
+4. Total harus ada persis 5 bagian cerita yang dipisahkan oleh 4 buah tanda "---HALAMAN---".`;
+
+                    const textUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+                    const payload = {
+                        contents: [{ role: 'user', parts: [{ text: textPrompt }] }],
+                        generationConfig: { temperature: 0.6 }
+                    };
+
+                    const textRes = await fetch(textUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!textRes.ok) throw new Error("Gagal terhubung ke AI Teks");
+                    const textData = await textRes.json();
+                    
+                    let rawText = textData?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                    let rawPages = rawText.split('---HALAMAN---').map(p => p.trim()).filter(p => p.length > 0);
+                    
+                    while(rawPages.length < 5) {
+                        rawPages.push(`Petualangan ${customIdeaText} berlanjut dengan penuh kegembiraan dan keceriaan.`);
+                    }
+                    if(rawPages.length > 5) {
+                        rawPages = rawPages.slice(0, 5);
+                    }
+
+                    const baseVisualStyle = `Cute 3D Pixar style children's book illustration, vibrant colors, magical lighting, masterpiece, consistent character design for ${customIdeaText}`;
+
+                    scenesData = rawPages.map((pageText, index) => {
+                        return {
+                            text: pageText,
+                            prompt: `${baseVisualStyle}, scene ${index + 1} of 5, action: ${pageText.substring(0, 80)}`
+                        };
+                    });
+
+                } else {
+                    document.getElementById('loading-text-msg').innerText = "Menyiapkan Buku... 📚";
+                    document.getElementById('loading-subtext').innerText = "Membuka halaman pertama...";
+                    scenesData = preloadedScenes;
+                }
+
+                this.scenes = scenesData.map(s => ({
+                    text: s.text,
+                    prompt: s.prompt,
+                    imageUrl: null,
+                    audioUrl: null,
+                    status: 'pending'
+                }));
+
+                document.getElementById('loading-text-msg').innerText = "2. Melukis Ilustrasi Halaman 1... 🎨";
+                document.getElementById('loading-subtext').innerText = "Membuat gambar 3D animasi yang pas dengan ceritamu...";
+                
+                await this.loadScene(0, true); 
+
+                showScreen('screen-storybook');
+                this.renderUI();
+                this.playCurrentAudio();
+
+                if (this.scenes.length > 1) {
+                    this.loadScene(1, false);
+                }
+
+            } catch (error) {
+                console.warn("Mode Cadangan:", error);
+                const fallbackIdea = customIdeaText || "petualangan ajaib";
+                const fallbackPages = [
+                    `Pada suatu hari yang cerah, dimulailah kisah seru tentang ${fallbackIdea} yang sudah dinanti-nantikan.`,
+                    `Perjalanan berlanjut ketika mereka menemukan sebuah petunjuk misterius di bawah pohon pelangi.`,
+                    `Dengan penuh semangat, mereka memecahkan teka-teki tersebut dan membuka gerbang dunia impian.`,
+                    `Di sana, mereka bertemu dengan teman-teman baru yang baik hati dan membantu menyelesaikan misi.`,
+                    `Akhirnya, petualangan ditutup dengan senyuman bahagia dan kenangan terindah yang takkan terlupakan.`
+                ];
+                
+                const baseVisualStyle = `Cute 3D Pixar style children's book illustration, vibrant colors, magical lighting about ${fallbackIdea}`;
+                this.scenes = fallbackPages.map((text, idx) => ({ 
+                    text: text, 
+                    prompt: `${baseVisualStyle}, scene ${idx+1}`, 
+                    imageUrl: null, 
+                    audioUrl: null, 
+                    status: 'pending' 
+                }));
+
+                await this.loadScene(0, true);
+                showScreen('screen-storybook');
+                this.renderUI();
+                this.playCurrentAudio();
+            } finally {
+                overlay.classList.remove('active');
+            }
+        },
+
+        async loadScene(idx, isInitialLoad = false) {
+            if(!this.scenes[idx] || this.scenes[idx].status !== 'pending') return;
+            
+            this.scenes[idx].status = 'loading';
+            if(this.currentIndex === idx && !isInitialLoad) this.renderUI();
+
+            try {
+                const imgUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=${GEMINI_API_KEY}`;
+                const imgPayload = { contents: [{ role: 'user', parts: [{ text: this.scenes[idx].prompt }] }], generationConfig: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: "16:9" } } };
+
+                const ttsPrompt = this.scenes[idx].text;
+                const ttsUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${GEMINI_API_KEY}`;
+                const ttsPayload = { contents: [{ parts: [{ text: ttsPrompt }] }], generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Leda" } } } }, model: "gemini-2.5-flash-preview-tts" };
+
+                const [imgRes, ttsRes] = await Promise.all([
+                    fetch(imgUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(imgPayload) }),
+                    fetch(ttsUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ttsPayload) })
+                ]);
+                
+                if (!imgRes.ok || !ttsRes.ok) throw new Error("Gagal akses API Media");
+
+                const imgData = await imgRes.json();
+                const ttsData = await ttsRes.json();
+
+                const imgPart = imgData?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+                if (imgPart) {
+                    this.scenes[idx].imageUrl = `data:${imgPart.inlineData.mimeType};base64,${imgPart.inlineData.data}`;
+                }
+
+                const audioPart = ttsData?.candidates?.[0]?.content?.parts?.[0];
+                if (audioPart && audioPart.inlineData) {
+                    const sampleRateMatch = audioPart.inlineData.mimeType.match(/rate=(\d+)/);
+                    const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
+                    const pcmData = base64ToArrayBuffer(audioPart.inlineData.data);
+                    const pcm16 = new Int16Array(pcmData);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    this.scenes[idx].audioUrl = URL.createObjectURL(wavBlob);
+                }
+
+                this.scenes[idx].status = 'ready';
+                
+            } catch (err) {
+                const cvs = document.createElement('canvas');
+                cvs.width = 800; cvs.height = 450;
+                const cCtx = cvs.getContext('2d');
+                const grad = cCtx.createLinearGradient(0, 0, 800, 450);
+                grad.addColorStop(0, '#9B59B6'); grad.addColorStop(1, '#FF914D');
+                cCtx.fillStyle = grad; cCtx.fillRect(0, 0, 800, 450);
+                cCtx.fillStyle = '#FFF'; cCtx.font = 'bold 40px sans-serif'; cCtx.textAlign = 'center';
+                cCtx.fillText('✨ Halaman ' + (idx + 1) + ' ✨', 400, 225);
+                
+                this.scenes[idx].imageUrl = cvs.toDataURL('image/png');
+                this.scenes[idx].useLocalTTS = true; 
+                this.scenes[idx].status = 'ready';
+            }
+
+            if(this.currentIndex === idx && !isInitialLoad) {
+                this.renderUI();
+                this.playCurrentAudio();
+            }
+
+            if(!isInitialLoad && idx + 1 < this.scenes.length && this.scenes[idx + 1].status === 'pending') {
+                this.loadScene(idx + 1, false);
+            }
+        },
+
+        renderUI() {
+            if(this.scenes.length === 0) return;
+            
+            const scene = this.scenes[this.currentIndex];
+            const imgEl = document.getElementById('scene-image');
+            const loaderEl = document.getElementById('scene-loader');
+            const textEl = document.getElementById('scene-text');
+            const btnPrev = document.getElementById('btn-prev-scene');
+            const btnNext = document.getElementById('btn-next-scene');
+            
+            const indicatorContainer = document.getElementById('scene-indicators');
+            indicatorContainer.innerHTML = '';
+            this.scenes.forEach((s, i) => {
+                const dot = document.createElement('div');
+                dot.className = 'page-dot';
+                if(i === this.currentIndex) dot.classList.add('active');
+                if(s.status === 'loading') dot.classList.add('loading');
+                indicatorContainer.appendChild(dot);
+            });
+
+            if (scene.status === 'ready') {
+                imgEl.src = scene.imageUrl || '';
+                imgEl.style.display = 'block';
+                imgEl.style.opacity = 1;
+                loaderEl.style.display = 'none';
+                textEl.innerHTML = scene.text;
+            } else {
+                imgEl.style.display = 'none';
+                loaderEl.style.display = 'flex';
+                document.getElementById('scene-loader-text').innerText = "Menyiapkan Halaman...";
+                textEl.innerHTML = `<span style="opacity:0.5;">(Halaman sedang dimuat...)</span>`;
+            }
+
+            btnPrev.disabled = (this.currentIndex === 0);
+            btnNext.disabled = (this.currentIndex === this.scenes.length - 1);
+        },
+
+        stopAudio() {
+            if (this.currentAudioNode) {
+                if (typeof this.currentAudioNode.pause === 'function') {
+                    this.currentAudioNode.pause();
+                }
+                this.currentAudioNode = null;
+            }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        },
+
+        playCurrentAudio() {
+            this.stopAudio();
+            const scene = this.scenes[this.currentIndex];
+            if (scene && scene.status === 'ready') {
+                if (scene.useLocalTTS || !scene.audioUrl) {
+                    if ('speechSynthesis' in window) {
+                        const utterance = new SpeechSynthesisUtterance(scene.text);
+                        utterance.lang = 'id-ID'; utterance.rate = 0.95; utterance.pitch = 1.3; 
+                        utterance.onend = () => {
+                            if(this.currentIndex < this.scenes.length - 1) {
+                                this.nextScene();
+                            } else {
+                                triggerConfetti();
+                                AudioEngine.playFanfare();
+                            }
+                        };
+                        this.currentAudioNode = { pause: () => window.speechSynthesis.cancel() };
+                        window.speechSynthesis.speak(utterance);
+                    }
+                } else {
+                    this.currentAudioNode = new Audio(scene.audioUrl);
+                    const playPromise = this.currentAudioNode.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => { console.log("Audio interruption handled."); });
+                    }
+                    this.currentAudioNode.onended = () => {
+                        if(this.currentIndex < this.scenes.length - 1) {
+                            this.nextScene();
+                        } else {
+                            triggerConfetti();
+                            AudioEngine.playFanfare();
+                        }
+                    };
+                }
+            }
+        },
+
+        nextScene() {
+            if (this.currentIndex < this.scenes.length - 1) {
+                AudioEngine.playPop();
+                this.currentIndex++;
+                this.stopAudio();
+                this.renderUI();
+                if(this.scenes[this.currentIndex].status === 'ready') {
+                    this.playCurrentAudio();
+                } else {
+                    this.loadScene(this.currentIndex);
+                }
+            }
+        },
+
+        prevScene() {
+            if (this.currentIndex > 0) {
+                AudioEngine.playPop();
+                this.currentIndex--;
+                this.stopAudio();
+                this.renderUI();
+                if(this.scenes[this.currentIndex].status === 'ready') {
+                    this.playCurrentAudio();
+                }
+            }
+        }
+    };
+
+  </script>
+</body>
+</html>
